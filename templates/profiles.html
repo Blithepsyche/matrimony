@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Matrimony | Update Profile {% endblock %}
+
+{% block content %}
+{% if 'userlogin' in request.session and request.session.userlogin == True %}
+{% block hero %}
+<div class="custom-navbar signup">
+    <a href="/" class="logo">
+        <img src="{% static 'images/logo-transparent-1.png' %}" alt="logo-img" class="signup-logo-image">
+    </a>
+
+    <div class="d-flex align-items-center">
+        <img src="{% if userData.profile_image %} /media/{{userData.profile_image}} {% else %} https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png {% endif %}"
+            alt="user-image" class="user-image" />
+        <a class="btn ms-0 text-dark" onclick="logout()">
+            Logout
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% if data %}
+<div class="d-flex align-items-center justify-content-center p-4 profile-pic-wrapper">
+    <div class="container mx-auto">
+        <div class="row profile-cards">
+            {% for row in data %}
+            <div class="card border-1 col-12 p-3">
+                <div class="card-content">
+                    <div class="card-profileImage d-flex align-items-center justify-content-center">
+                        <img src="{% if row.profile_image %} /media/{{row.profile_image}} {% else %} https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png {% endif %}"
+                            alt="profileImage">
+                    </div>
+                    <h3 class="text-center fw-light text-capitalize">{{row.first_name}} {{row.last_name}}
+                        (<span>{{row.age}}</span>)</h3>
+                    <div class="text-center">
+                        <span>{{row.phone_number}}</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="py-1 px-2 text-center d-flex flex-column align-items-center justify-content-center">
+                            <small class="text-body-secondary">Gender</small>
+                            <span class="fw-medium text-uppercase">{{row.gender}}</span>
+                        </div>
+                        <div
+                            class="py-1 px-2 text-center d-flex flex-column align-items-center justify-content-center ms-2">
+                            <small class="text-body-secondary">Religion</small>
+                            <span class="fw-medium text-uppercase">{{row.religion}}</span>
+                        </div>
+                        <div
+                            class="py-1 px-2 text-center d-flex flex-column align-items-center justify-content-center ms-2">
+                            <small class="text-body-secondary">Language</small>
+                            <span class="fw-medium text-uppercase">{{row.mother_tongue}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="d-flex align-items-center justify-content-center p-4 profile-pic-wrapper">
+    <div class="container mx-auto">
+        <div class="row">
+            <h1 class="text-center">No Profiles available</h1>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<script type="text/javascript">
+    if (confirm("Please login to view this page")) {
+        window.location.href = "/"
+    } else {
+        window.location.href = "/"
+    }
+</script>
+
+{% endif %}
+
+{% endblock %}
+
+{% block js %}
+<script>
+    const logout = () => {
+        window.location.href = '/logout/';
+    }
+</script>
+{% endblock %}

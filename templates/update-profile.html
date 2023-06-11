@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Matrimony | Update Profile {% endblock %}
+
+{% block content %}
+{% if 'userlogin' in request.session and request.session.userlogin == True %}
+{% block hero %}
+<div class="custom-navbar signup">
+  <a href="/" class="logo">
+    <img src="{% static 'images/logo-transparent-1.png' %}" alt="logo-img" class="signup-logo-image">
+  </a>
+
+  <div class="d-flex align-items-center">
+    <img 
+      src="{% if mydata.profile_image %} /media/{{mydata.profile_image}} {% else %} https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png {% endif %}"
+      alt="user-image"
+      class="user-image"
+    />
+    <a class="btn ms-0 text-dark" onclick="logout()">
+      Logout
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+<div class="d-flex align-items-center justify-content-center mt-2">
+  <div class="alert alert-dismissible fade d-none" id="messageContainer" role="alert">
+    <strong id="message"></strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+</div>
+
+<div class="d-flex align-items-center justify-content-center p-4 profile-pic-wrapper">
+  <div class="container mx-auto">
+    <div class="row">
+      <form class="card border-1 col-12 col-sm-5 p-3 mx-auto" id="updateUserForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="custom-card-header text-center">
+          <h4 class="form-heading">Update Details</h4>
+        </div>
+        <div class="card-content">
+          {% if mydata %}
+          <div class="mb-3">
+            <div class="d-flex align-items-center justify-content-center pic-holder">
+              <label for="newProfilePhoto">
+                <img 
+                  src="{% if mydata.profile_image %} /media/{{mydata.profile_image}} {% else %} https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png {% endif %}" 
+                  alt=""
+                  class="profile-image" 
+                  id="profileImage"
+                />
+              </label>
+              <input type="file" name="profile_pic" class="uploadProfileInput" id="newProfilePhoto" accept="image/*">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="gender" class="custom-label d-inline-flex">Gender <span id="gender_error"
+                class="validation-error"></span></label>
+            {% if mydata.gender %}
+            <select name="gender" id="gender" class="form-control">
+              <option value="{{mydata.gender}}" id="getUserGender"></option>
+            </select>
+            {% else %}
+            <select name="gender" id="gender" class="form-control">
+              <option value="">Select</option>
+              <option value="f">Female</option>
+              <option value="m">Male</option>
+            </select>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="religion" class="custom-label d-inline-flex">Religion <span id="religion_error"
+                class="validation-error"></span></label>
+
+            {% if mydata.religion %}
+            <select name="userReligion" id="userReligion" class="form-control">
+              <option value="{{mydata.religion}}" id="getUserReligion"></option>
+            </select>
+            {% else %}
+            <select name="religion" id="religion" class="form-control">
+            </select>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="motherTongue" class="custom-label d-inline-flex">Mother Tongue <span id="mother_tongue_error"
+                class="validation-error"></span></label>
+
+            {% if mydata.religion %}
+            <select name="userMotherTongue" id="userMotherTongue" class="form-control" aria-readonly="true">
+              <option value="{{mydata.mother_tongue}}" id="getUserMotherTongue"></option>
+            </select>
+            {% else %}
+            <select name="motherTongue" id="motherTongue" class="form-control">
+            </select>
+            {% endif %}
+          </div>
+
+          {% endif %}
+          <button class="btn col-6 mx-auto d-block signupButton" id="continue" data-text="Continue"
+            data-status="disabled">Continue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<script type="text/javascript">
+  if (confirm("Please login to view this page")) {
+    window.location.href = "/"
+  } else {
+    window.location.href = "/"
+  }
+</script>
+
+{% endif %}
+
+{% endblock %}
+
+{% block js %}
+<script>
+  const logout = () => {
+    window.location.href = '/logout/';
+  }
+
+  const userGender = $('#getUserGender').val();
+  console.log(userGender);
+  switch (userGender) {
+    case 'm':
+      $('#getUserGender').html(`Male`);
+      break;
+
+    case 'f':
+      $('#getUserGender').html(`Female`);
+      break;
+
+    default:
+      break;
+  }
+
+  const userReligion = $('#userReligion').val();
+  console.log(userReligion)
+
+  switch (userReligion) {
+    case 'H':
+      $('#getUserReligion').html(`Hindu`);
+      break;
+
+    case 'S':
+      $('#getUserReligion').html(`Sikh`);
+      break;
+
+    case 'P':
+      $('#getUserReligion').html(`Parsi`);
+      break;
+
+    case 'J':
+      $('#getUserReligion').html(`Jain`);
+      break;
+
+    case 'O':
+      $('#getUserReligion').html(`Other`);
+      break;
+
+    default:
+      break;
+  }
+
+  const userMotherTongue = $('#userMotherTongue').val();
+  console.log(userMotherTongue)
+
+  switch (userMotherTongue) {
+    case 'Hi':
+      $('#getUserMotherTongue').html(`Hindi`);
+      break;
+
+    case 'Pu':
+      $('#getUserMotherTongue').html(`Punjabi`);
+      break;
+
+    case 'Pa':
+      $('#getUserMotherTongue').html(`Parsi`);
+      break;
+
+    case 'En':
+      $('#getUserMotherTongue').html(`English`);
+      break;
+
+    case 'Oth':
+      $('#getUserMotherTongue').html(`Other`);
+      break;
+
+    default:
+      break;
+  }
+
+
+
+  const validateGender = () => {
+    const gender = $("#gender").val();
+
+    $("#gender_error").removeClass("text-danger d-block").html("");
+    if (gender === "") {
+      $("#gender_error").addClass("text-danger d-block").html("Required");
+      return false;
+    }
+    return true;
+  }
+
+  const validateReligion = () => {
+    const religion = $("#religion").val();
+
+    $("#religion_error").removeClass("text-danger d-block").html("");
+    if (religion === "") {
+      $("#religion_error").addClass("text-danger d-block").html("Required");
+      return false
+    }
+    return true;
+  }
+
+  const validateMotherTongue = () => {
+    const motherTongue = $("#motherTongue").val();
+
+    $("#mother_tongue_error").removeClass("text-danger d-block").html("");
+    if (motherTongue === "") {
+      $("#mother_tongue_error").addClass("text-danger d-block").html("Required");
+      return false;
+    }
+    return true;
+  }
+
+  $(document).ready(function (e) {
+    // handle religion selection
+    const religionDropDown = document.getElementById("religion");
+    const religionData = {
+      "Select": "",
+      "Hindu": "H",
+      "Sikh": "S",
+      "Parsi": "P",
+      "Jain": "J",
+      "Other": "O",
+    }
+
+    for (let key in religionData) {
+      let option = document.createElement("option");
+      option.setAttribute('value', religionData[key]);
+      if (key.toLowerCase() === "select") {
+        option.setAttribute("selected", true);
+      }
+
+      let optionText = document.createTextNode(key);
+      if ($('#religion').length) {
+        option.appendChild(optionText);
+        religionDropDown.appendChild(option);
+      }
+    }
+
+    if ($('#religion').length) {
+      religionDropDown.addEventListener("change", e => {
+        console.log(e.target.value);
+      })
+    }
+
+    // handle mother tongue selection
+    const motherTongueDropDown = document.getElementById("motherTongue");
+    const motherTongueData = {
+      "Select": "",
+      "Hindi": "Hi",
+      "Punjabi": "Pu",
+      "Parsi": "Pa",
+      "English": "En",
+      "Other": "Oth",
+    }
+
+    for (let key in motherTongueData) {
+      let option = document.createElement("option");
+      option.setAttribute('value', motherTongueData[key]);
+      if (key.toLowerCase() === "select") {
+        option.setAttribute("selected", true);
+      }
+
+      let optionText = document.createTextNode(key);
+      if ($('#motherTongue').length) {
+        option.appendChild(optionText);
+        motherTongueDropDown.appendChild(option);
+      }
+    }
+
+    if ($('#motherTongue').length) {
+      motherTongueDropDown.addEventListener("change", e => {
+        console.log(e.target.value);
+      })
+    }
+
+    $(document).on("change", ".uploadProfileInput", function () {
+      var triggerInput = this;
+      var imageHolder = $(this).closest(".pic-holder").find(".profile-image");
+      var currentImg = $(this).closest(".pic-holder").find(".profile-image").attr("src");
+      //console.log(currentImg);
+      triggerInput.blur();
+      var files = !!this.files ? this.files : [];
+      if (!files.length || !window.FileReader) {
+        return;
+      }
+      if (/^image/.test(files[0].type)) {
+        var image = URL.createObjectURL(files[0]);
+        imageHolder.attr('src', image)
+      } else {
+        alert("Please choose the valid image.")
+      }
+    });
+
+    $("#updateUserForm select").on("blur", () => {
+      validateGender();
+      validateReligion();
+      validateMotherTongue();
+    })
+
+    $(document).on("submit", "#updateUserForm", function (e) {
+      e.preventDefault();
+      validateGender();
+      validateReligion();
+      validateMotherTongue();
+
+      if (validateGender() && validateReligion() && validateMotherTongue()) {
+        var formData = new FormData(document.getElementById("updateUserForm"));
+        console.log(Object.fromEntries(formData.entries()));
+        $.ajax({
+          url: '/update_validation/',
+          type: 'post',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function (data) {
+            console.log(data.message);
+            if (data.status !== 1) {
+              $('#messageContainer').removeClass('d-none').addClass('d-block show alert-danger');
+              $('#message').addClass('text-danger').html(data.message);
+              setTimeout(() => {
+                $('#messageContainer').removeClass('show d-block show alert-danger').addClass('d-none');
+                $('.message').removeClass('text-danger').html('');
+              }, 3000)
+              return;
+            }
+            alert(data.message);
+            window.location.href = '/';
+          }
+        })
+      }
+    })
+  })
+</script>
+{% endblock %}

@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Matrimony | Sign up {% endblock %}
+
+{% block content %}
+    {% block hero %}
+        <div class="custom-navbar signup">
+            <a href="/" class="logo">
+                <img src="{% static 'images/logo-transparent-1.png' %}" alt="logo-img" class="signup-logo-image">
+            </a>
+        </div>
+    {% endblock %}
+
+<div class="d-flex align-items-center justify-content-center mt-2">
+    <div class="alert alert-dismissible fade d-none" id="messageContainer" role="alert">
+        <strong id="message"></strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+
+<div class="d-flex align-items-center justify-content-center p-4">
+    <div class="container mx-auto">
+        <div class="row">
+            <form class="card border-1 col-12 col-sm-5 p-3 mx-auto" id="signupForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="custom-card-header text-center">
+                    <h4 class="form-heading">Sign up</h4>
+                </div>
+                <div class="card-content">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="mb-3">
+                            <label for="signup_first_name" class="custom-label d-inline-flex">First Name <span id="first_name_error" class="validation-error"></span></label>
+                            <input 
+                                type="text" 
+                                name="signup_first_name" 
+                                id="signup_first_name" 
+                                class="form-control custom-form-control" 
+                                placeholder="Enter First Name"
+                            />
+                        </div>
+                        <div class="mb-3 ms-2">
+                            <label for="signup_last_name" class="custom-label d-inline-flex">Last Name <span id="last_name_error" class="validation-error"></span></label>
+                            <input 
+                                type="text" 
+                                name="signup_last_name" 
+                                id="signup_last_name" 
+                                class="form-control custom-form-control" 
+                                placeholder="Enter Last Name"
+                            />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date_of_birth" class="custom-label d-inline-flex">Date of birth <span class="validation-error" id="dob_error"></span></label>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <input 
+                                type="number"
+                                min="01"
+                                max="31"
+                                name="date_of_birth" 
+                                id="date_of_birth" 
+                                class="form-control custom-form-control" 
+                                placeholder="DD"
+                            />
+                            <input 
+                                type="number"
+                                min="01"
+                                max="12"
+                                name="month_of_birth" 
+                                id="month_of_birth" 
+                                class="form-control custom-form-control ms-2" 
+                                placeholder="MM"
+                            />
+                            <input 
+                                type="number"
+                                min="1990"
+                                max={% now "Y" %}
+                                name="year_of_birth" 
+                                id="year_of_birth" 
+                                class="form-control custom-form-control ms-2" 
+                                placeholder="YYYY"
+                            />
+                        </div>
+                    </div>
+                    <div class="d-none justify-content-between" id="emailPart">
+                        <div class="mb-3">
+                            <label for="signup_email" class="custom-label d-inline-flex">Email <span id="email_error" class="validation-error"></span></label>
+                            <input 
+                                type="text" 
+                                name="signup_email" 
+                                id="signup_email" 
+                                class="form-control custom-form-control" 
+                                placeholder="Enter Email"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="signup_phone" class="custom-label d-inline-flex">Phone no. <span id="phone_error" class="validation-error"></span></label>
+                            <input 
+                                type="text" 
+                                name="signup_phone" 
+                                id="signup_phone" 
+                                class="form-control custom-form-control" 
+                                placeholder="Enter Phone number"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="signup_password" class="custom-label d-inline-flex">Phone no. <span id="password_error" class="validation-error"></span></label>
+                            <input 
+                                type="password" 
+                                name="signup_password" 
+                                id="signup_password" 
+                                class="form-control custom-form-control" 
+                                placeholder="Enter Password"
+                            />
+                        </div>
+                    </div>
+                    <button class="btn col-6 mx-auto d-block signupButton" id="continue" data-text="Continue" data-status="disabled">Continue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    const date_regex = /^(0[1-9]|[12][0-9]|3[01])$/;
+    const month_regex = /^(0[1-9])|(1[0-2])$/;
+    const year_regex = /^(199[0-9]{1,})|(20[0-9]{1,})$/;
+    const phone_regex = /^\d{10}$/;
+    const email_regex = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/;
+
+    const dateObj = new Date();
+    const current_year = dateObj.getFullYear();
+
+    const validateName = () => {
+        const signup_first_name = $("#signup_first_name").val();
+        const signup_last_name = $("#signup_last_name").val();
+
+        $("#first_name_error").removeClass("text-danger d-block").html("")
+        $("#last_name_error").removeClass("text-danger d-block").html("")
+        if(signup_first_name === "") {
+            $("#first_name_error").addClass("text-danger d-block").html("required")
+        }
+        if(signup_last_name === "") {
+            $("#last_name_error").addClass("text-danger d-block").html("required")
+        }
+        else {
+            return true;
+        }
+        
+    }
+
+    const validateDOB = () => {
+        const date_of_birth = $("#date_of_birth").val();
+        const month_of_birth = $("#month_of_birth").val();
+        const year_of_birth = $("#year_of_birth").val();
+
+        $("#dob_error").removeClass("text-danger d-block").html("");
+        $("#email_error").removeClass("text-danger d-block").html("");
+        $("#phone_error").removeClass("text-danger d-block").html("");
+
+        $("#date_of_birth").css("border-color", "#dee2e6");
+        $("#month_of_birth").css("border-color", "#dee2e6");
+        $("#year_of_birth").css("border-color", "#dee2e6");
+        if(date_of_birth === "" && month_of_birth === "" && year_of_birth === "") {
+            $("#dob_error").addClass("text-danger d-block").html("required")
+            $("#date_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+            $("#month_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+            $("#year_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+        }
+        else if(month_of_birth === "" && year_of_birth === "") {
+            $("#dob_error").addClass("text-danger d-block").html("(Please enter the month and year)")
+            $("#month_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+            $("#year_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+        } else if(year_of_birth === "") {
+            $("#dob_error").addClass("text-danger d-block").html("(Please enter the year)")
+            $("#year_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+        } else if(date_of_birth === "") {
+            $("#dob_error").addClass("text-danger d-block").html("required")
+            $("#date_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+        } else if(month_of_birth === "") {
+            $("#dob_error").addClass("text-danger d-block").html("required")
+            $("#month_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+        } else if(!date_of_birth.match(date_regex)) {
+            $("#dob_error").addClass("text-danger d-block").html("(Please enter valid date)")
+            $("#date_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+        } else if(!month_of_birth.match(month_regex)) {
+            $("#dob_error").addClass("text-danger d-block").html("(Please enter valid month)")
+            $("#month_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+        } else if(!year_of_birth.match(year_regex)) {
+            $("#dob_error").addClass("text-danger d-block").html("(Please enter valid year)")
+            $("#year_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+        } else if(year_of_birth !== current_year && current_year - year_of_birth < 18 ) {
+            $("#dob_error").addClass("text-danger d-block").html("(Your age must be 18 Years)")
+            $("#year_of_birth").css("border-color", "rgba(255, 0, 0, .5)");
+        }
+        else {
+            return true;
+        }
+    }
+
+    const validateEmailAndPhone = () => {
+        const signup_email = $("#signup_email").val();
+        const signup_phone = $("#signup_phone").val();
+        const signup_password = $("#signup_password").val();
+        
+        $("#email_error").removeClass("text-danger d-block").html("");
+        $("#phone_error").removeClass("text-danger d-block").html("");
+        $("#password_error").removeClass("text-danger d-block").html("");
+
+        if($("#emailPart").hasClass("d-flex")) {
+            if(signup_email === "") {
+                $("#email_error").addClass("text-danger d-block").html("required")
+            }
+            else if(!signup_email.match(email_regex)) {
+                $("#email_error").addClass("text-danger d-block").html("Please enter valid email")
+            }
+            if(signup_phone === "") {
+                $("#phone_error").addClass("text-danger d-block").html("required")
+            }
+            else if(!signup_phone.match(phone_regex)) {
+                $("#phone_error").addClass("text-danger d-block").html("Please enter valid number")
+            }
+            if(signup_password === "") {
+                $("#password_error").addClass("text-danger d-block").html("Please enter password")
+            }
+            else if(signup_password.length < 6) {
+                $("#password_error").addClass("text-danger d-block").html("Password should be at least 6 characters")
+            }
+            else {
+                return true
+            }
+        }
+    }
+
+    $(document).ready(function(e){
+        $("#signupForm input").on("blur", ()=> {
+            validateName();
+            validateDOB();
+            if($("#emailPart").hasClass("d-flex")) {
+                validateEmailAndPhone()
+            }
+        })
+
+        $(document).on("submit", "#signupForm", function(e) {
+            e.preventDefault();
+            validateName();
+            validateDOB();
+            if(validateName() && validateDOB()) {
+                $("#emailPart").removeClass("d-none").addClass("d-flex flex-column")
+                $("#continue").attr("data-text", "Submit")
+                $("#continue").html("Submit")
+            }
+            if($("#emailPart").hasClass("d-flex")) {
+                validateEmailAndPhone()
+                if(validateEmailAndPhone()) {
+                    console.log("har har mahadev");
+                    var formData = new FormData(document.getElementById("signupForm"));
+                    $.ajax({
+                        url: '/signup_validation/',
+                        type: 'post',
+                        data: formData,
+                        contentType:false,
+                        processData: false,
+                        success: function (data) {
+                            console.log(data.message);
+                            if(data.status !== 1) {
+                                $('#messageContainer').removeClass('d-none').addClass('d-block show alert-danger');
+                                $('#message').addClass('text-danger').html(data.message);
+                                setTimeout(()=>{
+                                    $('#messageContainer').removeClass('show d-block show alert-danger').addClass('d-none');
+                                    $('.message').removeClass('text-danger').html('');
+                                }, 3000)
+                                return;
+                            }
+                            alert(data.message);
+                            window.location.href = '/login/';
+                        }
+                    })
+                }
+            }
+        })
+    })
+    /*    
+    var is_error = "";
+    $(".error").html("");
+    */
+
+</script>
+{% endblock %}
